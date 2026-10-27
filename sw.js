@@ -1,5 +1,5 @@
 /* Rumbo a la Armada — service worker (Vibras Positivas HM) */
-const CACHE = 'rumbo-armada-v3';
+const CACHE = 'rumbo-armada-v4';
 const SHELL = ['./', 'index.html', 'preguntas.js', 'manifest.json', 'og.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
