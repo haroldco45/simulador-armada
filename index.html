@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Rumbo a la Armada — Simulador de admisión</title>
+<meta name="description" content="Simulador gratuito para prepararse al proceso de incorporación a la Armada de Colombia: examen tipo, psicotécnica, requisitos, prueba física y entrevista.">
+<meta name="theme-color" content="#0b1f3a">
+<link rel="canonical" href="https://simulador-armada.netlify.app/">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rumbo a la Armada — Simulador de admisión">
+<meta property="og:description" content="Practica el examen, la psicotécnica y la entrevista para entrar a la Armada de Colombia. Gratis, en español e inglés.">
+<meta property="og:url" content="https://simulador-armada.netlify.app/">
+<meta property="og:image" content="https://simulador-armada.netlify.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Rumbo a la Armada — Simulador de admisión">
+<meta name="twitter:description" content="Practica el examen, la psicotécnica y la entrevista para entrar a la Armada de Colombia.">
+<meta name="twitter:image" content="https://simulador-armada.netlify.app/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0b1f3a; --navy2:#122b4f; --sea:#0e5aa7; --sea2:#1a7fd6; --foam:#e8f1fb;
+  --gold:#c9a227; --gold2:#e6c45a; --ok:#1f9d63; --bad:#d2453b;
+  --bg:#f4f7fb; --card:#ffffff; --ink:#0d1b2e; --muted:#5b6b80; --line:#dbe3ee;
+  --r:18px; --sh:0 10px 30px rgba(11,31,58,.12);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#07111f; --card:#0f1d33; --ink:#eaf1fb; --muted:#9fb0c6; --line:#1e3352; --foam:#10243f; }
+}
+:root[data-theme="dark"]{ --bg:#07111f; --card:#0f1d33; --ink:#eaf1fb; --muted:#9fb0c6; --line:#1e3352; --foam:#10243f; }
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;overflow-x:hidden}
+h1,h2,h3,.cond{font-family:'Barlow Condensed',sans-serif;letter-spacing:.3px}
+button{font:inherit;cursor:pointer;border:0}
+a{color:var(--sea2)}
+
+/* Barra superior */
+.top{position:sticky;top:0;z-index:50;background:rgba(11,31,58,.92);backdrop-filter:blur(10px);color:#fff}
+.top .in{max-width:1100px;margin:auto;display:flex;align-items:center;gap:12px;padding:10px 16px}
+.brand{font-family:'Barlow Condensed';font-weight:800;font-size:22px;letter-spacing:1px;flex:1}
+.brand span{color:var(--gold2)}
+.lang{display:flex;background:rgba(255,255,255,.12);border-radius:30px;padding:3px}
+.lang button{background:none;color:#fff;padding:5px 12px;border-radius:30px;font-weight:700;font-size:13px}
+.lang button.on{background:var(--gold);color:var(--navy)}
+.nav{max-width:1100px;margin:auto;display:flex;gap:6px;overflow-x:auto;padding:0 16px 10px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button{background:rgba(255,255,255,.08);color:#cfe0f5;padding:8px 14px;border-radius:30px;font-weight:600;font-size:14px;white-space:nowrap;transition:.25s}
+.nav button.on{background:#fff;color:var(--navy)}
+
+/* Hero con fotos reales */
+.hero{position:relative;height:min(78vh,620px);min-height:440px;overflow:hidden;color:#fff;background:linear-gradient(135deg,var(--navy),var(--sea))}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease}
+.slide.on{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover;transform:scale(1.12);animation:kb 14s ease-in-out infinite alternate}
+@keyframes kb{from{transform:scale(1.12) translate(0,0)}to{transform:scale(1) translate(-2%,1%)}}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,31,58,.25) 0%,rgba(11,31,58,.55) 50%,rgba(11,31,58,.95) 100%)}
+.hero .txt{position:absolute;z-index:2;left:0;right:0;bottom:0;max-width:1100px;margin:auto;padding:0 16px 70px}
+.kicker{display:inline-block;background:var(--gold);color:var(--navy);font-weight:800;font-size:12px;letter-spacing:2px;padding:5px 12px;border-radius:30px;text-transform:uppercase}
+.hero h1{font-size:clamp(44px,9vw,92px);line-height:.92;margin:12px 0 10px;text-transform:uppercase;font-weight:800}
+.hero h1 em{font-style:normal;color:var(--gold2)}
+.hero p{max-width:620px;font-size:17px;opacity:.92}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:40px;font-weight:700;font-size:15px;transition:transform .2s, box-shadow .2s}
+.btn:active{transform:scale(.97)}
+.btn.gold{background:var(--gold);color:var(--navy);box-shadow:0 8px 24px rgba(201,162,39,.4)}
+.btn.ghost{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.btn.sea{background:var(--sea);color:#fff}
+.btn.line{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.waves{position:absolute;bottom:-2px;left:0;width:200%;height:60px;z-index:3;animation:wv 12s linear infinite}
+@keyframes wv{to{transform:translateX(-50%)}}
+.credit{position:absolute;z-index:3;right:16px;top:12px;font-size:11px;opacity:.7}
+
+/* Ticker */
+.ticker{background:var(--navy);color:#dfe9f7;overflow:hidden;white-space:nowrap;font-size:14px;padding:10px 0}
+.ticker div{display:inline-block;padding-left:100%;animation:tk 45s linear infinite}
+.ticker b{color:var(--gold2);margin:0 6px 0 30px}
+@keyframes tk{to{transform:translateX(-100%)}}
+
+main{max-width:1100px;margin:auto;padding:24px 16px 40px}
+section.view{display:none;animation:up .45s ease}
+section.view.on{display:block}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.h2{font-size:36px;font-weight:800;text-transform:uppercase;margin-bottom:4px}
+.sub{color:var(--muted);margin-bottom:20px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+.route{position:relative;overflow:hidden;cursor:pointer;color:#fff;min-height:200px;padding:0;border:0;text-align:left;border-radius:var(--r);box-shadow:var(--sh);background:var(--navy)}
+.route img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.route:hover img{transform:scale(1.07)}
+.route .ov{position:absolute;inset:0;background:linear-gradient(180deg,transparent 20%,rgba(11,31,58,.95))}
+.route .t{position:absolute;left:16px;right:16px;bottom:14px}
+.route h3{font-size:26px;text-transform:uppercase;line-height:1}
+.route small{opacity:.85}
+.route.sel{outline:4px solid var(--gold);outline-offset:-4px}
+.route .tag{position:absolute;top:12px;left:12px;background:var(--gold);color:var(--navy);font-weight:800;font-size:11px;padding:4px 10px;border-radius:20px;letter-spacing:1px;opacity:0;transition:.3s}
+.route.sel .tag{opacity:1}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0}
+.stat{background:linear-gradient(135deg,var(--navy),var(--sea));color:#fff;border-radius:var(--r);padding:16px}
+.stat b{display:block;font-family:'Barlow Condensed';font-size:40px;line-height:1;color:var(--gold2)}
+.stat span{font-size:13px;opacity:.9}
+
+.steps{counter-reset:s;display:grid;gap:10px}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.step::before{counter-increment:s;content:counter(s);flex:0 0 38px;height:38px;border-radius:50%;background:var(--sea);color:#fff;display:grid;place-items:center;font-family:'Barlow Condensed';font-weight:800;font-size:20px}
+.step h4{font-size:16px}
+.step p{color:var(--muted);font-size:14px}
+
+/* Examen */
+.exam-head{position:sticky;top:96px;z-index:20;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:var(--sh);margin-bottom:14px}
+.clock{font-family:'Barlow Condensed';font-weight:800;font-size:30px;min-width:92px}
+.clock.warn{color:var(--bad);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.bar{flex:1;height:10px;background:var(--line);border-radius:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sea),var(--gold));width:0;transition:width .4s}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--sh)}
+.qmeta{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.pas{background:var(--foam);border-left:4px solid var(--sea);padding:12px 14px;border-radius:10px;margin:12px 0;font-size:15px}
+.qtext{font-size:20px;font-weight:600;margin:12px 0 16px}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);border:2px solid var(--line);color:var(--ink);padding:14px 16px;border-radius:14px;margin-bottom:10px;font-size:16px;transition:.2s;position:relative}
+.opt:hover{border-color:var(--sea2)}
+.opt .l{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--line);font-weight:800;margin-right:10px;font-size:13px}
+.opt.pick{border-color:var(--sea);background:var(--foam)}
+.opt.pick .l{background:var(--sea);color:#fff}
+.opt.right{border-color:var(--ok);background:rgba(31,157,99,.12)}
+.opt.right .l{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:rgba(210,69,59,.1)}
+.opt.wrong .l{background:var(--bad);color:#fff}
+.exp{margin-top:8px;padding:12px 14px;border-radius:12px;background:var(--foam);font-size:15px;display:none}
+.exp.on{display:block;animation:up .3s}
+.qnav{display:flex;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.dots button{width:30px;height:30px;border-radius:8px;background:var(--line);color:var(--ink);font-size:12px;font-weight:700}
+.dots button.ans{background:var(--sea);color:#fff}
+.dots button.cur{outline:3px solid var(--gold)}
+
+/* Resultados */
+.ring{width:190px;height:190px;margin:auto;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .v{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .v b{font-family:'Barlow Condensed';font-size:56px;line-height:1}
+.verdict{text-align:center;font-family:'Barlow Condensed';font-size:30px;font-weight:800;text-transform:uppercase;margin:10px 0}
+.areabar{margin:10px 0}
+.areabar .n{display:flex;justify-content:space-between;font-size:14px;font-weight:600}
+.areabar .bar{height:12px}
+
+/* Formularios */
+label{display:block;font-weight:600;font-size:14px;margin:10px 0 4px}
+input,select{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+.chk{display:flex;gap:10px;align-items:center;font-weight:500}
+.chk input{width:auto}
+.req{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.pill{font-weight:800;font-size:12px;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.pill.ok{background:rgba(31,157,99,.15);color:var(--ok)}
+.pill.no{background:rgba(210,69,59,.15);color:var(--bad)}
+.pill.mid{background:rgba(201,162,39,.2);color:#9a7a12}
+.note{font-size:13px;color:var(--muted);margin-top:12px}
+.alert{background:rgba(201,162,39,.14);border:1px solid rgba(201,162,39,.5);padding:12px 14px;border-radius:12px;font-size:14px;margin:12px 0}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-weight:600;text-transform:uppercase;font-size:12px;letter-spacing:.5px}
+
+.iv{font-size:22px;font-weight:600;margin:12px 0;min-height:66px}
+.tip{background:var(--foam);padding:12px 14px;border-radius:12px;font-size:15px}
+.bigclock{font-family:'Barlow Condensed';font-size:64px;font-weight:800;text-align:center;color:var(--sea)}
+
+.install{position:fixed;left:16px;right:16px;bottom:16px;z-index:60;max-width:520px;margin:auto;background:var(--navy);color:#fff;border-radius:16px;padding:14px 16px;display:none;align-items:center;gap:12px;box-shadow:0 14px 40px rgba(0,0,0,.35)}
+.install.on{display:flex;animation:up .4s}
+.install p{flex:1;font-size:14px}
+
+footer{background:var(--navy);color:#c8d6ea;text-align:center;padding:28px 16px;font-size:13px}
+footer b{color:#fff}
+footer .disc{max-width:760px;margin:10px auto 0;opacity:.8}
+.psi-hero{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:linear-gradient(135deg,var(--navy),var(--sea));color:#fff;border:0}
+.psi-hero .note{color:#d6e4f5}
+.opt svg{display:inline-block}
+.lik{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:14px}
+.lik button{background:var(--bg);border:2px solid var(--line);color:var(--ink);border-radius:12px;padding:12px 4px;font-size:13px;font-weight:600;transition:.2s}
+.lik button:hover{border-color:var(--sea2)}
+.lik button.pick{background:var(--sea);border-color:var(--sea);color:#fff}
+.memnum{font-family:'Barlow Condensed';font-size:64px;font-weight:800;letter-spacing:10px;text-align:center;color:var(--sea);min-height:90px}
+.vid{position:relative;border-radius:var(--r);overflow:hidden;background:var(--navy);aspect-ratio:16/9;cursor:pointer;box-shadow:var(--sh);border:0;padding:0;width:100%;display:block}
+.vid img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.vid:hover img{transform:scale(1.06)}
+.vid .ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,31,58,.05) 30%,rgba(11,31,58,.92))}
+.vid .t{position:absolute;left:14px;right:14px;bottom:12px;color:#fff;text-align:left}
+.vid .t b{display:block;font-family:'Barlow Condensed';font-size:21px;line-height:1.05;text-transform:uppercase}
+.vid .ver{position:absolute;top:12px;left:12px;background:var(--gold);color:var(--navy);font-weight:800;font-size:11px;letter-spacing:1.5px;padding:5px 11px;border-radius:20px}
+.vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.hide{display:none!important}
+@media (max-width:600px){ .exam-head{top:92px} .qtext{font-size:18px} .h2{font-size:30px} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="in">
+    <div class="brand">RUMBO A LA <span>ARMADA</span></div>
+    <div class="lang"><button data-l="es" class="on">ES</button><button data-l="en">EN</button></div>
+  </div>
+  <nav class="nav" id="nav">
+    <button data-v="inicio" class="on" data-t="nInicio">Inicio</button>
+    <button data-v="simulacro" data-t="nSim">Simulacro</button>
+    <button data-v="psico" data-t="nPsi">Psicotécnica</button>
+    <button data-v="practica" data-t="nPrac">Práctica por área</button>
+    <button data-v="requisitos" data-t="nReq">¿Cumplo requisitos?</button>
+    <button data-v="fisica" data-t="nFis">Prueba física</button>
+    <button data-v="entrevista" data-t="nEnt">Entrevista</button>
+    <button data-v="progreso" data-t="nProg">Mi progreso</button>
+  </nav>
+</header>
+
+<div class="hero" id="hero">
+  <div class="slide on"><img src="https://www.cgfm.mil.co/sites/default/files/2025-04/cogfm-arc-juramento-la-bandera-de-150-nuevos-cadetes-en-la-escuela-naval-14.jpg" alt="Cadetes de la Escuela Naval en juramento de bandera" onerror="this.remove()"></div>
+  <div class="slide"><img src="https://www.cgfm.mil.co/sites/default/files/2024-01/cogfm_arc._foto._ingreso_aspirantes_i-2024_9.jpg" alt="Ingreso de aspirantes a la Escuela Naval de Cadetes" onerror="this.remove()"></div>
+  <div class="slide"><img src="https://www.cgfm.mil.co/sites/default/files/cogfm_arc_grumetes_juran_bandera.jpeg" alt="Grumetes juran bandera en la Escuela Naval de Suboficiales" onerror="this.remove()"></div>
+  <div class="slide"><img src="https://www.cgfm.mil.co/sites/default/files/cogfm-armada-de-colombia-cadetes-de-buque-peruano-visitan-escuela-naval-11_1.jpg" alt="Cadetes en la Escuela Naval Almirante Padilla" onerror="this.remove()"></div>
+  <div class="credit" data-t="credit">Fotos: Armada de Colombia / Comando General FF.MM.</div>
+  <div class="txt">
+    <span class="kicker" data-t="kick">Simulador de admisión 2026–2027</span>
+    <h1 data-t="h1" data-html="1">Tu rumbo a la <em>Armada</em> empieza hoy</h1>
+    <p data-t="heroP">Practica el examen tipo, la prueba psicotécnica, la entrevista y tu preparación física para el proceso de incorporación a la Armada de Colombia.</p>
+    <div class="cta">
+      <button class="btn gold" onclick="go('simulacro')" data-t="ctaSim">Hacer simulacro completo</button>
+      <button class="btn ghost" onclick="go('requisitos')" data-t="ctaReq">Ver si cumplo requisitos</button>
+    </div>
+  </div>
+  <svg class="waves" viewBox="0 0 2880 60" preserveAspectRatio="none"><path fill="var(--bg)" d="M0 30 Q 180 0 360 30 T 720 30 T 1080 30 T 1440 30 T 1800 30 T 2160 30 T 2520 30 T 2880 30 V60 H0Z"/></svg>
+</div>
+
+<div class="ticker"><div id="ticker"></div></div>
+
+<main>
+<!-- INICIO -->
+<section class="view on" id="v-inicio">
+  <h2 class="h2" data-t="chooseT">Elige tu ruta</h2>
+  <p class="sub" data-t="chooseS">El simulacro y los requisitos se ajustan a la escuela a la que quieres entrar.</p>
+  <div class="grid g2" id="routes"></div>
+
+  <div class="stats">
+    <div class="stat"><b id="sQ">0</b><span data-t="stQ">preguntas en el banco</span></div>
+    <div class="stat"><b>12</b><span data-t="stA">áreas evaluadas</span></div>
+    <div class="stat"><b>∞</b><span data-t="stN">preguntas nuevas en cada intento</span></div>
+    <div class="stat"><b id="sDone">0</b><span data-t="stD">simulacros presentados</span></div>
+    <div class="stat"><b id="sBest">—</b><span data-t="stB">tu mejor puntaje</span></div>
+  </div>
+
+  <h2 class="h2" data-t="vidT">Conoce la vida naval</h2>
+  <p class="sub" data-t="vidS">Videos reales de la Armada de Colombia: el ingreso, la formación, el juramento y el buque escuela.</p>
+  <div class="grid g3" id="videos"></div>
+
+  <h2 class="h2" data-t="procT" style="margin-top:28px">Cómo es el proceso</h2>
+  <p class="sub" data-t="procS">Etapas generales del proceso de incorporación. Cada convocatoria publica su propio cronograma.</p>
+  <div class="steps" id="steps"></div>
+  <div class="alert" data-t="official" data-html="1">La inscripción es solo virtual en el portal oficial <a href="https://incorporaciones.armada.mil.co/" target="_blank" rel="noopener">incorporaciones.armada.mil.co</a>. Verifica siempre la convocatoria vigente: requisitos, edades y puntajes cambian.</div>
+</section>
+
+<!-- SIMULACRO -->
+<section class="view" id="v-simulacro">
+  <div id="simStart">
+    <h2 class="h2" data-t="simT">Simulacro completo</h2>
+    <p class="sub" data-t="simS">Preguntas de todas las áreas, con reloj. Las respuestas se revelan al final, como en el examen real.</p>
+    <div class="grid g3">
+      <div class="card"><h3 class="cond" style="font-size:24px" data-t="m1">Simulacro estándar</h3><p class="note" data-t="m1d">50 preguntas · 60 minutos</p><button class="btn sea" style="margin-top:12px" onclick="startExam('full')" data-t="start">Empezar</button></div>
+      <div class="card"><h3 class="cond" style="font-size:24px" data-t="m2">Pruebas psicotécnicas</h3><p class="note" data-t="m2d">Aptitudes, atención, memoria y personalidad</p><button class="btn sea" style="margin-top:12px" onclick="go('psico')" data-t="goPsi">Ir a la psicotécnica</button></div>
+      <div class="card"><h3 class="cond" style="font-size:24px" data-t="m3">Repaso express</h3><p class="note" data-t="m3d">20 preguntas mezcladas · 20 minutos</p><button class="btn sea" style="margin-top:12px" onclick="startExam('mini')" data-t="start">Empezar</button></div>
+    </div>
+    <p class="note" id="routeNote"></p>
+    <div class="alert" id="covNote"></div>
+  </div>
+  <div id="exam" class="hide"></div>
+</section>
+
+
+<!-- PSICOTÉCNICA -->
+<section class="view" id="v-psico">
+  <div id="psiStart">
+    <h2 class="h2" data-t="psiT">Pruebas psicotécnicas</h2>
+    <p class="sub" data-t="psiS">La Armada aplica una evaluación psicotécnica virtual. Aquí practicas los mismos tipos de prueba: aptitudes con reloj, atención, memoria y un cuestionario de personalidad.</p>
+    <div class="psi-hero card">
+      <div><h3 class="cond" style="font-size:28px" data-t="batT">Batería completa</h3><p class="note" data-t="batD">42 preguntas · 35 minutos · verbal, numérica, abstracta, espacial, lógica y atención</p></div>
+      <button class="btn gold" onclick="go('simulacro');startExam('bat')" data-t="start">Empezar</button>
+    </div>
+    <h3 class="cond" style="font-size:26px;margin:22px 0 10px" data-t="aptT">Aptitudes por separado</h3>
+    <div class="grid g3" id="psiCards"></div>
+    <h3 class="cond" style="font-size:26px;margin:22px 0 10px" data-t="otrT">Memoria y personalidad</h3>
+    <div class="grid g2">
+      <div class="card"><h3 class="cond" style="font-size:24px" data-t="memT">Memoria de trabajo</h3><p class="note" data-t="memD">Ves una cifra por 3 segundos y la escribes. Cada acierto la alarga un dígito.</p><button class="btn sea" style="margin-top:12px" onclick="memStart()" data-t="start">Empezar</button></div>
+      <div class="card"><h3 class="cond" style="font-size:24px" data-t="perT">Cuestionario de personalidad</h3><p class="note" data-t="perD">24 afirmaciones. No hay respuestas buenas ni malas: se mide tu perfil y qué tan sincero eres.</p><button class="btn sea" style="margin-top:12px" onclick="perStart()" data-t="start">Empezar</button></div>
+    </div>
+    <div class="alert" data-t="psiTip">Consejo: en la prueba real se cruzan respuestas para medir consistencia. Responde como eres, no como crees que quieren que seas.</div>
+  </div>
+  <div id="psiBox" class="hide"></div>
+</section>
+
+<!-- PRÁCTICA -->
+<section class="view" id="v-practica">
+  <div id="pracStart">
+    <h2 class="h2" data-t="pracT">Práctica por área</h2>
+    <p class="sub" data-t="pracS">Sin reloj y con la explicación de cada respuesta apenas contestas.</p>
+    <div class="grid g3" id="areaCards"></div>
+  </div>
+  <div id="prac" class="hide"></div>
+</section>
+
+<!-- REQUISITOS -->
+<section class="view" id="v-requisitos">
+  <h2 class="h2" data-t="reqT">¿Cumplo los requisitos?</h2>
+  <p class="sub" data-t="reqS">Revisión orientativa con base en requisitos publicados por la Armada. La convocatoria vigente manda.</p>
+  <div class="grid g2">
+    <div class="card">
+      <label data-t="fRoute">Ruta</label><select id="rRoute"></select>
+      <label data-t="fBirth">Fecha de nacimiento</label><input type="date" id="rBirth">
+      <label data-t="fEntry">Fecha probable de ingreso a la escuela</label><input type="date" id="rEntry">
+      <div class="grid g3" style="gap:8px">
+        <div><label data-t="fMat">ICFES Matemáticas</label><input type="number" min="0" max="100" id="rMat" placeholder="0-100"></div>
+        <div><label data-t="fCie">ICFES Ciencias</label><input type="number" min="0" max="100" id="rCie" placeholder="0-100"></div>
+        <div><label data-t="fLec">ICFES Lectura crítica</label><input type="number" min="0" max="100" id="rLec" placeholder="0-100"></div>
+        <div><label data-t="fSoc">ICFES Sociales</label><input type="number" min="0" max="100" id="rSoc" placeholder="0-100"></div>
+      </div>
+      <label class="chk"><input type="checkbox" id="rBach"> <span data-t="fBach">Soy bachiller o estoy en grado 11</span></label>
+      <label class="chk"><input type="checkbox" id="rSwim"> <span data-t="fSwim">Sé nadar</span></label>
+      <label class="chk"><input type="checkbox" id="rTat"> <span data-t="fTat">No tengo tatuajes visibles con uniforme</span></label>
+      <button class="btn gold" style="margin-top:14px;width:100%" onclick="checkReq()" data-t="check">Revisar</button>
+      <p class="note" data-t="privacy">Tus datos no salen de tu celular: se usan solo para este cálculo y no se guardan en ningún servidor.</p>
+    </div>
+    <div class="card" id="reqOut"><p class="note" data-t="reqEmpty">Llena el formulario y toca Revisar.</p></div>
+  </div>
+</section>
+
+<!-- FÍSICA -->
+<section class="view" id="v-fisica">
+  <h2 class="h2" data-t="fisT">Bitácora de prueba física</h2>
+  <p class="sub" data-t="fisS">Registra tus marcas y mira cómo mejoras. Las metas son sugeridas para entrenar, no son las tablas oficiales.</p>
+  <div class="grid g2">
+    <div class="card">
+      <label data-t="fSex">Entreno como</label>
+      <select id="pSex"><option value="h" data-t="man">Hombre</option><option value="m" data-t="woman">Mujer</option></select>
+      <div class="grid g3" style="gap:8px">
+        <div><label data-t="pPush">Flexiones de pecho (1 min)</label><input type="number" id="pPush" min="0"></div>
+        <div><label data-t="pAbs">Abdominales (1 min)</label><input type="number" id="pAbs" min="0"></div>
+        <div><label data-t="pRun">Trote 2 km (minutos)</label><input type="number" id="pRun" step="0.1" min="0"></div>
+        <div><label data-t="pSwim">Nado continuo (metros)</label><input type="number" id="pSwim" min="0"></div>
+      </div>
+      <button class="btn gold" style="margin-top:14px;width:100%" onclick="savePhys()" data-t="saveMark">Guardar marca de hoy</button>
+    </div>
+    <div class="card" id="physOut"></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3 class="cond" style="font-size:24px" data-t="histT">Historial</h3><div id="physHist"></div></div>
+</section>
+
+<!-- ENTREVISTA -->
+<section class="view" id="v-entrevista">
+  <h2 class="h2" data-t="entT">Simulador de entrevista</h2>
+  <p class="sub" data-t="entS">Responde en voz alta antes de que se acabe el tiempo. Practica frente a un espejo o con alguien de tu familia.</p>
+  <div class="card">
+    <div class="qmeta"><span id="ivN"></span><span data-t="ivTime">90 segundos por pregunta</span></div>
+    <div class="iv" id="ivQ"></div>
+    <div class="bigclock" id="ivClock">1:30</div>
+    <div class="tip" id="ivTip"></div>
+    <div class="qnav">
+      <button class="btn line" onclick="ivMove(-1)" data-t="prev">Anterior</button>
+      <button class="btn gold" onclick="ivStart()" id="ivBtn" data-t="ivGo">Iniciar tiempo</button>
+      <button class="btn line" onclick="ivMove(1)" data-t="next">Siguiente</button>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRESO -->
+<section class="view" id="v-progreso">
+  <h2 class="h2" data-t="progT">Mi progreso</h2>
+  <p class="sub" data-t="progS">Tus simulacros quedan guardados en este celular, con hora de Colombia.</p>
+  <div class="card" id="progOut"></div>
+</section>
+</main>
+
+<div class="install" id="install"><p data-t="instP">Instala Rumbo a la Armada en tu celular y practica sin internet.</p><button class="btn gold" id="instBtn" data-t="instB">Instalar</button><button class="btn ghost" onclick="this.parentNode.classList.remove('on')" data-t="close">Cerrar</button></div>
+
+<footer>
+  <b>Desarrollada por Vibras Positivas HM — Derechos de Autor Reservados</b><br>
+  <span data-t="foot1">Caucasia, Antioquia · vibraspositivashm.com · WhatsApp 311 770 0431</span>
+  <p class="disc" data-t="disc">Herramienta independiente de práctica. No es un producto oficial ni está avalada por la Armada de Colombia. Las preguntas son de práctica tipo examen y no corresponden a pruebas oficiales. Consulta requisitos y fechas en incorporaciones.armada.mil.co.</p>
+</footer>
+
+<script src="preguntas.js"></script>
+<script>
+/* ================= Utilidades ================= */
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+let L = store.get('ra_lang', 'es');
+const L_IDX = () => L === 'es' ? 0 : 1;
+const fechaCO = d => new Date(d).toLocaleString(L === 'es' ? 'es-CO' : 'en-US', { timeZone:'America/Bogota', dateStyle:'medium', timeStyle:'short' });
+const shuffle = a => { a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+
+/* ================= Textos ES / EN ================= */
+const T = {
+ es:{nInicio:'Inicio',nSim:'Simulacro',nPrac:'Práctica por área',nReq:'¿Cumplo requisitos?',nFis:'Prueba física',nEnt:'Entrevista',nProg:'Mi progreso',
+  credit:'Fotos: Armada de Colombia / Comando General FF.MM.',kick:'Simulador de admisión 2026–2027',h1:'Tu rumbo a la <em>Armada</em> empieza hoy',
+  heroP:'Practica el examen tipo, la prueba psicotécnica, la entrevista y tu preparación física para el proceso de incorporación a la Armada de Colombia.',
+  ctaSim:'Hacer simulacro completo',ctaReq:'Ver si cumplo requisitos',chooseT:'Elige tu ruta',chooseS:'El simulacro y los requisitos se ajustan a la escuela a la que quieres entrar.',
+  stQ:'preguntas en el banco',stA:'áreas evaluadas',stD:'simulacros presentados',stB:'tu mejor puntaje',procT:'Cómo es el proceso',
+  procS:'Etapas generales del proceso de incorporación. Cada convocatoria publica su propio cronograma.',
+  official:'La inscripción es solo virtual en el portal oficial <a href="https://incorporaciones.armada.mil.co/" target="_blank" rel="noopener">incorporaciones.armada.mil.co</a>. Verifica siempre la convocatoria vigente: requisitos, edades y puntajes cambian.',
+  simT:'Simulacro completo',simS:'Preguntas de todas las áreas, con reloj. Las respuestas se revelan al final, como en el examen real.',
+  m1:'Simulacro estándar',m1d:'50 preguntas · 60 minutos',m2:'Psicotécnica rápida',m2d:'16 preguntas de razonamiento · 15 minutos',m3:'Repaso express',m3d:'20 preguntas mezcladas · 20 minutos',start:'Empezar',
+  pracT:'Práctica por área',pracS:'Sin reloj y con la explicación de cada respuesta apenas contestas.',
+  reqT:'¿Cumplo los requisitos?',reqS:'Revisión orientativa con base en requisitos publicados por la Armada. La convocatoria vigente manda.',
+  fRoute:'Ruta',fBirth:'Fecha de nacimiento',fEntry:'Fecha probable de ingreso a la escuela',fMat:'ICFES Matemáticas',fCie:'ICFES Ciencias',fLec:'ICFES Lectura crítica',fSoc:'ICFES Sociales',
+  fBach:'Soy bachiller o estoy en grado 11',fSwim:'Sé nadar',fTat:'No tengo tatuajes visibles con uniforme',check:'Revisar',
+  privacy:'Tus datos no salen de tu celular: se usan solo para este cálculo y no se guardan en ningún servidor.',reqEmpty:'Llena el formulario y toca Revisar.',
+  fisT:'Bitácora de prueba física',fisS:'Registra tus marcas y mira cómo mejoras. Las metas son sugeridas para entrenar, no son las tablas oficiales.',
+  fSex:'Entreno como',man:'Hombre',woman:'Mujer',pPush:'Flexiones de pecho (1 min)',pAbs:'Abdominales (1 min)',pRun:'Trote 2 km (minutos)',pSwim:'Nado continuo (metros)',
+  saveMark:'Guardar marca de hoy',histT:'Historial',entT:'Simulador de entrevista',entS:'Responde en voz alta antes de que se acabe el tiempo. Practica frente a un espejo o con alguien de tu familia.',
+  ivTime:'90 segundos por pregunta',prev:'Anterior',next:'Siguiente',ivGo:'Iniciar tiempo',ivStop:'Detener',progT:'Mi progreso',progS:'Tus simulacros quedan guardados en este celular, con hora de Colombia.',
+  instP:'Instala Rumbo a la Armada en tu celular y practica sin internet.',instB:'Instalar',close:'Cerrar',
+  foot1:'Caucasia, Antioquia · vibraspositivashm.com · WhatsApp 311 770 0431',
+  disc:'Herramienta independiente de práctica. No es un producto oficial ni está avalada por la Armada de Colombia. Las preguntas son de práctica tipo examen y no corresponden a pruebas oficiales. Consulta requisitos y fechas en incorporaciones.armada.mil.co.',
+  q:'Pregunta',of:'de',finish:'Terminar y calificar',confirmEnd:'¿Seguro que quieres terminar? Hay preguntas sin responder.',timeUp:'Se acabó el tiempo',
+  result:'Resultado',pass:'Vas por buen rumbo',mid:'Casi listo: refuerza',low:'A seguir entrenando',byArea:'Resultado por área',review:'Revisar respuestas',
+  again:'Otro simulacro',home:'Volver',yourAns:'Tu respuesta',noAns:'Sin responder',correct:'Correcta',score:'Puntaje',date:'Fecha',mode:'Modo',
+  noHist:'Todavía no has presentado simulacros. El primero es el más importante.',weak:'Tu área más floja',strong:'Tu área más fuerte',
+  practiceNow:'Practicar esta área',seeExp:'Ver explicación',nextQ:'Siguiente pregunta',endPrac:'Terminar práctica',correctMsg:'Correcto',wrongMsg:'Incorrecto',
+  pracDone:'Práctica terminada',route:'Ruta seleccionada',
+  ok:'Cumple',no:'No cumple',chk:'Revisar',age:'Edad al ingreso',years:'años',icfes:'ICFES',bach:'Bachiller o grado 11',swim:'Saber nadar',tat:'Sin tatuajes visibles',
+  reqNote:'Según la Armada, el puntaje ICFES no siempre es excluyente: puede pesar en la Junta de Selección. Confirma todo en la convocatoria oficial.',
+  sex:'Pueden aplicar',both:'Hombres y mujeres',men:'Hombres (según convocatorias publicadas)',
+  physGoals:'Metas sugeridas para entrenar',best:'Mejor marca',last:'Última',noPhys:'Aún no has registrado marcas.',
+  min:'min',m:'m',reps:'rep.',saved:'Marca guardada',fill:'Escribe al menos una marca.',
+  mFull:'Simulacro estándar',mPsi:'Psicotécnica',mMini:'Repaso express',
+  nPsi:'Psicotécnica',goPsi:'Ir a la psicotécnica',psiT:'Pruebas psicotécnicas',psiS:'La Armada aplica una evaluación psicotécnica virtual. Aquí practicas los mismos tipos de prueba: aptitudes con reloj, atención, memoria y un cuestionario de personalidad.',
+  batT:'Batería completa',batD:'42 preguntas · 35 minutos · verbal, numérica, abstracta, espacial, lógica y atención',aptT:'Aptitudes por separado',otrT:'Memoria y personalidad',
+  memT:'Memoria de trabajo',memD:'Ves una cifra por 3 segundos y la escribes. Cada acierto la alarga un dígito.',perT:'Cuestionario de personalidad',perD:'24 afirmaciones. No hay respuestas buenas ni malas: se mide tu perfil y qué tan sincero eres.',
+  psiTip:'Consejo: en la prueba real se cruzan respuestas para medir consistencia. Responde como eres, no como crees que quieren que seas.',
+  mBat:'Batería psicotécnica',min2:'minutos',qs:'preguntas',memWatch:'Memoriza esta cifra',memType:'Escribe la cifra que viste',memOk:'Bien. Ahora una cifra más larga.',memBad:'Era',memEnd:'Tu memoria de trabajo llegó a',digits:'dígitos',memRef:'Entre 7 y 9 dígitos es un buen nivel. Si te quedas en 5, practica todos los días.',send:'Enviar',
+  lik:['Totalmente en desacuerdo','En desacuerdo','Ni de acuerdo ni en desacuerdo','De acuerdo','Totalmente de acuerdo'],perRes:'Tu perfil',sinc:'Sinceridad',sincBad:'Tus respuestas salen demasiado perfectas. En la prueba real eso se detecta y baja tu confiabilidad: responde con sinceridad.',sincOk:'Tus respuestas se ven sinceras.',perNote:'Este perfil es orientativo y sirve para conocerte antes de la entrevista. No es un diagnóstico ni un resultado oficial.',back:'Volver',rep:'Repetir',vidT:'Conoce la vida naval',vidS:'Videos reales de la Armada de Colombia: el ingreso, la formación, el juramento y el buque escuela.',ver:'VER VIDEO',
+  cov:'Cada examen cambia: primero salen las preguntas del banco que no has visto y los números, series, figuras y códigos se crean nuevos en cada intento. Llevas {a} de {b} preguntas del banco.',stN:'preguntas nuevas en cada intento'},
+ en:{nInicio:'Home',nSim:'Mock exam',nPrac:'Practice by area',nReq:'Do I qualify?',nFis:'Fitness test',nEnt:'Interview',nProg:'My progress',
+  credit:'Photos: Colombian Navy / Military Forces General Command',kick:'Admission simulator 2026–2027',h1:'Your course to the <em>Navy</em> starts today',
+  heroP:'Practice the sample exam, aptitude test, interview and physical preparation for the Colombian Navy recruitment process.',
+  ctaSim:'Take a full mock exam',ctaReq:'Check if I qualify',chooseT:'Choose your path',chooseS:'The mock exam and requirements adapt to the school you want to join.',
+  stQ:'questions in the bank',stA:'areas assessed',stD:'mock exams taken',stB:'your best score',procT:'How the process works',
+  procS:'General stages of the recruitment process. Each call publishes its own schedule.',
+  official:'Registration is online only through the official portal <a href="https://incorporaciones.armada.mil.co/" target="_blank" rel="noopener">incorporaciones.armada.mil.co</a>. Always check the current call: requirements, ages and scores change.',
+  simT:'Full mock exam',simS:'Questions from every area, with a timer. Answers are revealed at the end, like the real exam.',
+  m1:'Standard mock exam',m1d:'50 questions · 60 minutes',m2:'Quick aptitude test',m2d:'16 reasoning questions · 15 minutes',m3:'Express review',m3d:'20 mixed questions · 20 minutes',start:'Start',
+  pracT:'Practice by area',pracS:'No timer, and you see the explanation right after each answer.',
+  reqT:'Do I meet the requirements?',reqS:'Guidance check based on requirements published by the Navy. The current official call always prevails.',
+  fRoute:'Path',fBirth:'Date of birth',fEntry:'Expected school entry date',fMat:'ICFES Math',fCie:'ICFES Science',fLec:'ICFES Critical reading',fSoc:'ICFES Social studies',
+  fBach:'I finished high school or I am in grade 11',fSwim:'I can swim',fTat:'No tattoos visible in uniform',check:'Check',
+  privacy:'Your data never leaves your phone: it is only used for this calculation and is not stored on any server.',reqEmpty:'Fill in the form and tap Check.',
+  fisT:'Fitness test log',fisS:'Log your marks and track your improvement. Goals are suggested for training, not the official tables.',
+  fSex:'I train as',man:'Man',woman:'Woman',pPush:'Push-ups (1 min)',pAbs:'Sit-ups (1 min)',pRun:'2 km run (minutes)',pSwim:'Continuous swim (meters)',
+  saveMark:'Save today’s marks',histT:'History',entT:'Interview simulator',entS:'Answer out loud before time runs out. Practice in front of a mirror or with a family member.',
+  ivTime:'90 seconds per question',prev:'Previous',next:'Next',ivGo:'Start timer',ivStop:'Stop',progT:'My progress',progS:'Your mock exams are saved on this phone, in Colombia time.',
+  instP:'Install Rumbo a la Armada on your phone and practice offline.',instB:'Install',close:'Close',
+  foot1:'Caucasia, Antioquia · vibraspositivashm.com · WhatsApp +57 311 770 0431',
+  disc:'Independent practice tool. It is not an official product and is not endorsed by the Colombian Navy. Questions are practice items and do not come from official tests. Check requirements and dates at incorporaciones.armada.mil.co.',
+  q:'Question',of:'of',finish:'Finish and grade',confirmEnd:'Are you sure you want to finish? Some questions are unanswered.',timeUp:'Time is up',
+  result:'Result',pass:'You are on course',mid:'Almost ready: reinforce',low:'Keep training',byArea:'Result by area',review:'Review answers',
+  again:'Another mock exam',home:'Back',yourAns:'Your answer',noAns:'Unanswered',correct:'Correct',score:'Score',date:'Date',mode:'Mode',
+  noHist:'You have not taken any mock exams yet. The first one matters most.',weak:'Your weakest area',strong:'Your strongest area',
+  practiceNow:'Practice this area',seeExp:'See explanation',nextQ:'Next question',endPrac:'End practice',correctMsg:'Correct',wrongMsg:'Incorrect',
+  pracDone:'Practice finished',route:'Selected path',
+  ok:'Meets',no:'Does not meet',chk:'Check',age:'Age at entry',years:'years',icfes:'ICFES',bach:'High school or grade 11',swim:'Can swim',tat:'No visible tattoos',
+  reqNote:'According to the Navy, the ICFES score is not always eliminatory: it may weigh in the Selection Board. Confirm everything in the official call.',
+  sex:'Who can apply',both:'Men and women',men:'Men (per published calls)',
+  physGoals:'Suggested training goals',best:'Best mark',last:'Latest',noPhys:'You have not logged any marks yet.',
+  min:'min',m:'m',reps:'reps',saved:'Marks saved',fill:'Enter at least one mark.',
+  mFull:'Standard mock exam',mPsi:'Aptitude',mMini:'Express review',
+  nPsi:'Aptitude tests',goPsi:'Go to aptitude tests',psiT:'Aptitude tests',psiS:'The Navy applies an online aptitude assessment. Here you practice the same kinds of tests: timed aptitudes, attention, memory and a personality questionnaire.',
+  batT:'Full battery',batD:'42 questions · 35 minutes · verbal, numerical, abstract, spatial, logical and attention',aptT:'Aptitudes one by one',otrT:'Memory and personality',
+  memT:'Working memory',memD:'You see a number for 3 seconds and type it. Each correct answer adds one digit.',perT:'Personality questionnaire',perD:'24 statements. There are no right or wrong answers: it measures your profile and how sincere you are.',
+  psiTip:'Tip: the real test cross-checks answers to measure consistency. Answer as you are, not as you think they want you to be.',
+  mBat:'Aptitude battery',min2:'minutes',qs:'questions',memWatch:'Memorize this number',memType:'Type the number you saw',memOk:'Good. Now a longer number.',memBad:'It was',memEnd:'Your working memory reached',digits:'digits',memRef:'Between 7 and 9 digits is a good level. If you stay at 5, practice every day.',send:'Submit',
+  lik:['Strongly disagree','Disagree','Neither agree nor disagree','Agree','Strongly agree'],perRes:'Your profile',sinc:'Sincerity',sincBad:'Your answers look too perfect. In the real test this is detected and lowers your reliability: answer sincerely.',sincOk:'Your answers look sincere.',perNote:'This profile is for guidance, to know yourself before the interview. It is not a diagnosis or an official result.',back:'Back',rep:'Repeat',vidT:'Discover naval life',vidS:'Real videos from the Colombian Navy: entry, training, the oath and the training ship.',ver:'WATCH VIDEO',
+  cov:'Every exam changes: unseen bank questions come first, and numbers, series, figures and codes are created fresh on every attempt. You have seen {a} of {b} bank questions.',stN:'new questions on every attempt'}
+};
+const t = k => (T[L] && T[L][k]) || T.es[k] || k;
+
+/* ================= Rutas ================= */
+const RUTAS = [
+ {id:'cadN', img:'https://www.cgfm.mil.co/sites/default/files/2025-04/cogfm-arc-juramento-la-bandera-de-150-nuevos-cadetes-en-la-escuela-naval-14.jpg',
+  n:['Cadete Naval','Naval Cadet'], d:['Oficial · Escuela Naval de Cadetes "Almirante Padilla", Cartagena','Officer · "Almirante Padilla" Naval Cadet School, Cartagena'],
+  edad:[16,21], icfes:{mat:51,cie:51,lec:51}, sexo:'both'},
+ {id:'cadIM', img:'https://www.cgfm.mil.co/sites/default/files/2024-01/cogfm_arc._foto._ingreso_aspirantes_i-2024_9.jpg',
+  n:['Cadete de Infantería de Marina','Marine Corps Cadet'], d:['Oficial de Infantería de Marina · Escuela Naval de Cadetes, Cartagena','Marine Corps officer · Naval Cadet School, Cartagena'],
+  edad:[16,21], icfes:{mat:51,cie:51,lec:51}, sexo:'men'},
+ {id:'grum', img:'https://www.cgfm.mil.co/sites/default/files/cogfm_arc_grumetes_juran_bandera.jpeg',
+  n:['Grumete — Suboficial Naval','Grumete — Naval Petty Officer'], d:['Escuela Naval de Suboficiales ARC "Barranquilla" · formación tecnológica','ARC "Barranquilla" Petty Officer School · technical training'],
+  edad:[16,22], icfes:{mat:40,cie:40,lec:40}, sexo:'both'},
+ {id:'infM', img:'https://www.cgfm.mil.co/sites/default/files/cogfm-armada-de-colombia-cadetes-de-buque-peruano-visitan-escuela-naval-11_1.jpg',
+  n:['Suboficial de Infantería de Marina','Marine Corps Petty Officer'], d:['Escuela de Formación de Infantería de Marina, Coveñas (Sucre)','Marine Corps Training School, Coveñas (Sucre)'],
+  edad:[16,23], icfes:{mat:35,lec:40,soc:40}, sexo:'men'}
+];
+let ruta = store.get('ra_ruta','cadN');
+const R = () => RUTAS.find(r => r.id === ruta) || RUTAS[0];
+
+const VIDEOS = [
+ ['fzQyVsM7v30','Cómo es el ingreso a la Escuela Naval de Cadetes','How cadets enter the Naval Cadet School'],
+ ['MF71hEK6ESQ','Cadete por una semana','Cadet for a week'],
+ ['GE67uJWR2NE','Así se forman los futuros cadetes en Cartagena','How future cadets train in Cartagena'],
+ ['BZ3XCu87PMM','Juramento de bandera y entrega de armas','Flag oath and arms ceremony'],
+ ['hulYY0qdJAI','Así es el ARC Gloria, buque escuela de Colombia','Inside the ARC Gloria, Colombia’s training ship'],
+ ['S1rGzIrXocs','Reseña histórica de la Escuela Naval','History of the Naval Cadet School']
+];
+function renderVideos(){
+  $('#videos').innerHTML = VIDEOS.map(v => `<button class="vid" onclick="playVid(this,'${v[0]}')" aria-label="${v[L_IDX()+1]}">
+    <img src="https://i.ytimg.com/vi/${v[0]}/hqdefault.jpg" alt="${v[L_IDX()+1]}" loading="lazy"><div class="ov"></div>
+    <span class="ver">${t('ver')}</span><div class="t"><b>${v[L_IDX()+1]}</b><small>YouTube</small></div></button>`).join('');
+}
+function playVid(el, id){
+  const box = document.createElement('div'); box.className = 'vid'; box.style.cursor = 'default';
+  box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  el.replaceWith(box);
+}
+const PASOS = {
+ es:[['Inscripción virtual','En el portal oficial de incorporación, con documentos y pago de inscripción.'],
+     ['Prueba psicotécnica','Evaluación virtual de aptitudes, razonamiento y rasgos de personalidad.'],
+     ['Entrevista psicológica','Conversación sobre tu vocación, tu familia, tus metas y tu manejo de la presión.'],
+     ['Exámenes médicos y odontológicos','Valoración de tu estado de salud para la vida naval militar.'],
+     ['Prueba física','Resistencia, fuerza y saber nadar (se verifica al ingreso).'],
+     ['Estudio de seguridad y Junta de Selección','Revisión de antecedentes y decisión final con todo tu desempeño.']],
+ en:[['Online registration','On the official recruitment portal, with documents and registration fee.'],
+     ['Aptitude test','Online assessment of aptitudes, reasoning and personality traits.'],
+     ['Psychological interview','A conversation about your calling, family, goals and how you handle pressure.'],
+     ['Medical and dental exams','Health assessment for naval military life.'],
+     ['Fitness test','Endurance, strength and swimming ability (checked at entry).'],
+     ['Security check and Selection Board','Background review and final decision based on your overall performance.']]
+};
+const TIPS = {
+ es:['Duerme bien la noche anterior al examen','En series numéricas, mira primero las diferencias entre números','Repasa fracciones, porcentajes y regla de tres','Lee la pregunta completa antes de mirar las opciones','Practica nadar sin parar al menos 15 minutos','En la entrevista, habla de tu vocación con ejemplos reales','Llega temprano: la puntualidad también se evalúa','Babor es izquierda, estribor es derecha','En la psicotécnica responde con sinceridad: se mide la consistencia'],
+ en:['Sleep well the night before the exam','In number series, look at the differences first','Review fractions, percentages and proportions','Read the whole question before the options','Practice swimming nonstop for at least 15 minutes','In the interview, explain your calling with real examples','Arrive early: punctuality is assessed too','Port is left, starboard is right','In the aptitude test answer sincerely: consistency is measured']
+};
+
+/* ================= Render general ================= */
+function applyLang(){
+  document.documentElement.lang = L;
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const v = t(el.dataset.t);
+    if (el.dataset.html) el.innerHTML = v; else el.textContent = v;
+  });
+  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === L));
+  $('#ticker').innerHTML = TIPS[L].map(x => `<b>RUMBO</b>${x}`).join('');
+  renderRoutes(); renderVideos(); renderSteps(); renderAreas(); renderPsi(); renderStats(); fillRouteSelect(); renderPhys(); ivRender(); renderProg();
+  $('#routeNote').textContent = `${t('route')}: ${R().n[L_IDX()]}`;
+  renderCov();
+}
+function renderCov(){ const el = $('#covNote'); if (el) el.textContent = t('cov').replace('{a}', coverage()).replace('{b}', BANCO.length); }
+document.querySelectorAll('.lang button').forEach(b => b.onclick = () => { L = b.dataset.l; store.set('ra_lang', L); applyLang(); });
+
+function go(v){
+  document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  const top = $('main').offsetTop - 110; window.scrollTo({top: Math.max(0, top), behavior:'smooth'});
+  if (v === 'progreso') renderProg();
+}
+document.querySelectorAll('#nav button').forEach(b => b.onclick = () => go(b.dataset.v));
+
+function renderRoutes(){
+  $('#routes').innerHTML = RUTAS.map(r => `
+    <button class="route ${r.id===ruta?'sel':''}" onclick="pickRoute('${r.id}')">
+      <img src="${r.img}" alt="" loading="lazy" onerror="this.remove()"><div class="ov"></div>
+      <span class="tag">${L==='es'?'SELECCIONADA':'SELECTED'}</span>
+      <div class="t"><h3>${r.n[L_IDX()]}</h3><small>${r.d[L_IDX()]}</small></div>
+    </button>`).join('');
+}
+function pickRoute(id){ ruta = id; store.set('ra_ruta', id); renderRoutes(); fillRouteSelect(); $('#routeNote').textContent = `${t('route')}: ${R().n[L_IDX()]}`; }
+function renderSteps(){ $('#steps').innerHTML = PASOS[L].map(p => `<div class="step"><div><h4>${p[0]}</h4><p>${p[1]}</p></div></div>`).join(''); }
+function renderStats(){
+  const h = store.get('ra_hist', []);
+  animNum($('#sQ'), BANCO.length);
+  animNum($('#sDone'), h.length);
+  $('#sBest').textContent = h.length ? Math.max(...h.map(x => x.score)) : '—';
+}
+function animNum(el, to){ let n = 0; const st = Math.max(1, Math.ceil(to/30)); const i = setInterval(()=>{ n = Math.min(to, n+st); el.textContent = n; if(n>=to) clearInterval(i); }, 25); }
+
+/* Slider del hero */
+(() => { const s = document.querySelectorAll('.slide'); let i = 0; setInterval(() => { s[i].classList.remove('on'); i = (i+1) % s.length; s[i].classList.add('on'); }, 6000); })();
+
+/* ================= Preparar preguntas ================= */
+function prep(q){
+  const li = L_IDX();
+  const opts = (q.o[li] || q.o[0]);
+  const order = shuffle(opts.map((_, i) => i));
+  return { a:q.a, p:q.p, q:q.q[li] || q.q[0], o:order.map(i => opts[i]), c:order.indexOf(q.c), e:q.e[li] || q.e[0] };
+}
+/* Rotación: primero salen las preguntas del banco que aún no has visto;
+   en las áreas con generador, la mitad del examen se crea nueva en cada intento. */
+const qKey = q => q.a + '|' + q.q[0].slice(0, 70);
+function pickArea(area, n){
+  const gen = GENERADORES[area];
+  const bank = BANCO.filter(q => q.a === area);
+  let seen = new Set(store.get('ra_seen', []));
+  const nBank = Math.min(gen ? Math.ceil(n / 2) : n, bank.length);
+  let fresh = shuffle(bank.filter(q => !seen.has(qKey(q))));
+  if (fresh.length < nBank){
+    const keep = [...seen].filter(k => !k.startsWith(area + '|'));
+    seen = new Set(keep);
+    fresh = fresh.concat(shuffle(bank.filter(q => !fresh.includes(q))));
+  }
+  const out = fresh.slice(0, nBank);
+  out.forEach(q => seen.add(qKey(q)));
+  store.set('ra_seen', [...seen]);
+  while (gen && out.length < n) out.push(gen());
+  return shuffle(out);
+}
+function coverage(){ const seen = new Set(store.get('ra_seen', [])); return BANCO.filter(q => seen.has(qKey(q))).length; }
+const MIX = {
+  full:{cadN:{mat:11,cie:8,lec:7,ing:8,raz:8,nav:5,soc:3}, cadIM:{mat:11,cie:8,lec:7,ing:8,raz:8,nav:5,soc:3},
+        grum:{mat:12,cie:7,lec:7,ing:6,raz:9,nav:5,soc:4}, infM:{mat:10,cie:5,lec:8,ing:5,raz:9,nav:6,soc:7}, min:60},
+  psi:{all:{raz:16}, min:15},
+  bat:{all:{psV:7,psN:7,psA:7,psE:6,raz:7,psT:8}, min:35},
+  s_psV:{all:{psV:13}, min:10}, s_psN:{all:{psN:12}, min:12}, s_psA:{all:{psA:12}, min:10},
+  s_psE:{all:{psE:9}, min:8}, s_raz:{all:{raz:16}, min:15}, s_psT:{all:{psT:12}, min:8},
+  mini:{all:{mat:5,cie:3,lec:3,ing:3,raz:3,nav:2,soc:1}, min:20}
+};
+
+/* ================= Simulacro ================= */
+let EX = null, timer = null;
+function startExam(mode){
+  const cfg = MIX[mode]; const mix = cfg.all || cfg[ruta];
+  let qs = [];
+  Object.entries(mix).forEach(([a,n]) => qs.push(...pickArea(a,n)));
+  qs = qs.map(prep);
+  // Las preguntas del pasaje van juntas
+  const pas = qs.filter(q => q.p), rest = qs.filter(q => !q.p);
+  qs = shuffle(rest); if (pas.length){ const k = Math.min(qs.length, 5); qs.splice(k, 0, ...pas); }
+  EX = { mode, qs, ans: Array(qs.length).fill(null), i:0, end: Date.now() + cfg.min*60000, done:false };
+  $('#simStart').classList.add('hide'); $('#exam').classList.remove('hide');
+  clearInterval(timer); timer = setInterval(tick, 1000);
+  drawExam(); tick();
+}
+function tick(){
+  if (!EX || EX.done) return;
+  const s = Math.max(0, Math.round((EX.end - Date.now())/1000));
+  const el = $('#clk'); if (el){ el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`; el.classList.toggle('warn', s < 120); }
+  if (s <= 0){ alert(t('timeUp')); finish(true); }
+}
+function drawExam(){
+  const q = EX.qs[EX.i], n = EX.qs.length, answered = EX.ans.filter(x => x !== null).length;
+  $('#exam').innerHTML = `
+   <div class="exam-head"><div class="clock" id="clk">--:--</div><div class="bar"><i style="width:${answered/n*100}%"></i></div><b>${answered}/${n}</b></div>
+   <div class="qcard">
+     <div class="qmeta"><span>${t('q')} ${EX.i+1} ${t('of')} ${n}</span><span>${AREAS[q.a][L]}</span></div>
+     ${q.p ? `<div class="pas">${PASAJE_MAR[L]}</div>` : ''}
+     <div class="qtext">${q.q}</div>
+     ${q.o.map((o,k) => `<button class="opt ${EX.ans[EX.i]===k?'pick':''}" onclick="answer(${k})"><span class="l">${'ABCD'[k]}</span>${o}</button>`).join('')}
+     <div class="qnav">
+       <button class="btn line" onclick="move(-1)" ${EX.i===0?'disabled':''}>${t('prev')}</button>
+       ${EX.i < n-1 ? `<button class="btn sea" onclick="move(1)">${t('next')}</button>` : `<button class="btn gold" onclick="finish()">${t('finish')}</button>`}
+     </div>
+     <div class="dots">${EX.qs.map((_,k) => `<button class="${EX.ans[k]!==null?'ans':''} ${k===EX.i?'cur':''}" onclick="jump(${k})">${k+1}</button>`).join('')}</div>
+     <div style="margin-top:14px;text-align:right"><button class="btn line" onclick="finish()">${t('finish')}</button></div>
+   </div>`;
+  tick();
+}
+function answer(k){ EX.ans[EX.i] = k; drawExam(); if (EX.i < EX.qs.length-1){ const at = EX.i; setTimeout(() => { if (EX && !EX.done && EX.i === at) move(1); }, 260); } }
+function move(d){ EX.i = Math.min(EX.qs.length-1, Math.max(0, EX.i + d)); drawExam(); }
+function jump(k){ EX.i = k; drawExam(); }
+function finish(force){
+  if (!force && EX.ans.includes(null) && !confirm(t('confirmEnd'))) return;
+  EX.done = true; clearInterval(timer);
+  const per = {};
+  EX.qs.forEach((q,i) => { per[q.a] = per[q.a] || {ok:0,n:0}; per[q.a].n++; if (EX.ans[i] === q.c) per[q.a].ok++; });
+  const ok = EX.qs.filter((q,i) => EX.ans[i] === q.c).length;
+  const score = Math.round(ok / EX.qs.length * 100);
+  const hist = store.get('ra_hist', []);
+  hist.push({ d: Date.now(), mode: EX.mode, ruta, score, per });
+  store.set('ra_hist', hist.slice(-60));
+  showResult(score, per);
+  renderStats(); renderCov();
+}
+function ringSVG(score){
+  const C = 2*Math.PI*80, col = score >= 70 ? 'var(--ok)' : score >= 50 ? 'var(--gold)' : 'var(--bad)';
+  return `<div class="ring"><svg width="190" height="190"><circle cx="95" cy="95" r="80" stroke="var(--line)" stroke-width="16" fill="none"/>
+   <circle id="rg" cx="95" cy="95" r="80" stroke="${col}" stroke-width="16" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" style="transition:stroke-dashoffset 1.4s ease"/></svg>
+   <div class="v"><div><b id="rgN">0</b><div class="note">/ 100</div></div></div></div>`;
+}
+function showResult(score, per){
+  const verdict = score >= 70 ? t('pass') : score >= 50 ? t('mid') : t('low');
+  const areas = Object.entries(per).map(([a,v]) => ({a, p: Math.round(v.ok/v.n*100), ok:v.ok, n:v.n})).sort((x,y) => x.p - y.p);
+  $('#exam').innerHTML = `
+   <div class="card" style="text-align:center">
+     <h2 class="h2">${t('result')}</h2>${ringSVG(score)}<div class="verdict">${verdict}</div>
+     ${areas.length>1?`<p class="note">${t('weak')}: <b>${AREAS[areas[0].a][L]}</b> · ${t('strong')}: <b>${AREAS[areas[areas.length-1].a][L]}</b></p>`:''}
+   </div>
+   <div class="card" style="margin-top:14px"><h3 class="cond" style="font-size:24px">${t('byArea')}</h3>
+     ${areas.map(x => `<div class="areabar"><div class="n"><span>${AREAS[x.a][L]}</span><span>${x.ok}/${x.n} · ${x.p}%</span></div><div class="bar"><i style="width:${x.p}%"></i></div></div>`).join('')}
+     <div class="qnav"><button class="btn line" onclick="reviewExam()">${t('review')}</button>
+     ${areas.length?`<button class="btn sea" onclick="go('practica');startPrac('${areas[0].a}')">${t('practiceNow')}: ${AREAS[areas[0].a][L]}</button>`:''}
+     <button class="btn gold" onclick="backSim()">${t('again')}</button></div>
+   </div><div id="rev"></div>`;
+  requestAnimationFrame(() => setTimeout(() => {
+    if (!$('#rg')) return; const C = 2*Math.PI*80; $('#rg').style.strokeDashoffset = C - C*score/100; animNum($('#rgN'), score);
+  }, 60));
+  window.scrollTo({top: $('main').offsetTop - 110, behavior:'smooth'});
+}
+function reviewExam(){
+  $('#rev').innerHTML = EX.qs.map((q,i) => `
+   <div class="qcard" style="margin-top:12px"><div class="qmeta"><span>${t('q')} ${i+1}</span><span>${AREAS[q.a][L]}</span></div>
+   <div class="qtext" style="font-size:17px">${q.q}</div>
+   ${q.o.map((o,k) => `<div class="opt ${k===q.c?'right':''} ${EX.ans[i]===k && k!==q.c?'wrong':''}"><span class="l">${'ABCD'[k]}</span>${o}</div>`).join('')}
+   <div class="exp on">${EX.ans[i]===null?`<b>${t('noAns')}.</b> `:''}${q.e}</div></div>`).join('');
+}
+function backSim(){ EX = null; $('#exam').classList.add('hide'); $('#simStart').classList.remove('hide'); }
+
+/* ================= Práctica ================= */
+let PR = null;
+function renderAreas(){
+  $('#areaCards').innerHTML = Object.keys(AREAS).filter(a => !a.startsWith('ps')).map(a => {
+    const n = BANCO.filter(q => q.a === a).length;
+    return `<div class="card"><h3 class="cond" style="font-size:24px">${AREAS[a][L]}</h3><p class="note">${n}${GENERADORES[a]?' + ∞':''} ${L==='es'?'preguntas':'questions'}</p>
+     <button class="btn sea" style="margin-top:10px" onclick="startPrac('${a}')">${t('start')}</button></div>`;
+  }).join('');
+}
+function startPrac(a){
+  const n = GENERADORES[a] ? 15 : BANCO.filter(q => q.a === a).length;
+  PR = { a, qs: pickArea(a, n).map(prep), i:0, ok:0, ans:null };
+  $('#pracStart').classList.add('hide'); $('#prac').classList.remove('hide'); drawPrac();
+}
+function drawPrac(){
+  const q = PR.qs[PR.i], done = PR.ans !== null;
+  $('#prac').innerHTML = `
+   <div class="exam-head"><b>${AREAS[PR.a][L]}</b><div class="bar"><i style="width:${(PR.i+(done?1:0))/PR.qs.length*100}%"></i></div><b>${PR.ok}/${PR.qs.length}</b></div>
+   <div class="qcard"><div class="qmeta"><span>${t('q')} ${PR.i+1} ${t('of')} ${PR.qs.length}</span></div>
+   ${q.p ? `<div class="pas">${PASAJE_MAR[L]}</div>` : ''}<div class="qtext">${q.q}</div>
+   ${q.o.map((o,k) => `<button class="opt ${done && k===q.c?'right':''} ${done && PR.ans===k && k!==q.c?'wrong':''}" ${done?'disabled':''} onclick="pracAns(${k})"><span class="l">${'ABCD'[k]}</span>${o}</button>`).join('')}
+   <div class="exp ${done?'on':''}">${done?`<b>${PR.ans===q.c?t('correctMsg'):t('wrongMsg')}.</b> ${q.e}`:''}</div>
+   <div class="qnav"><button class="btn line" onclick="endPrac()">${t('endPrac')}</button>
+   ${done?`<button class="btn gold" onclick="pracNext()">${PR.i<PR.qs.length-1?t('nextQ'):t('finish')}</button>`:''}</div></div>`;
+}
+function pracAns(k){ PR.ans = k; if (k === PR.qs[PR.i].c) PR.ok++; drawPrac(); }
+function pracNext(){ if (PR.i < PR.qs.length-1){ PR.i++; PR.ans = null; drawPrac(); } else {
+  const p = Math.round(PR.ok/PR.qs.length*100);
+  $('#prac').innerHTML = `<div class="card" style="text-align:center"><h2 class="h2">${t('pracDone')}</h2>${ringSVG(p)}<p class="note">${AREAS[PR.a][L]} · ${PR.ok}/${PR.qs.length}</p>
+    <div class="qnav" style="justify-content:center"><button class="btn sea" onclick="startPrac('${PR.a}')">${t('again')}</button><button class="btn line" onclick="endPrac()">${t('home')}</button></div></div>`;
+  setTimeout(() => { if (!$('#rg')) return; const C = 2*Math.PI*80; $('#rg').style.strokeDashoffset = C - C*p/100; animNum($('#rgN'), p); }, 60);
+}}
+function endPrac(){ PR = null; $('#prac').classList.add('hide'); $('#pracStart').classList.remove('hide'); }
+
+/* ================= Requisitos ================= */
+function fillRouteSelect(){ $('#rRoute').innerHTML = RUTAS.map(r => `<option value="${r.id}" ${r.id===ruta?'selected':''}>${r.n[L_IDX()]}</option>`).join(''); }
+function checkReq(){
+  const r = RUTAS.find(x => x.id === $('#rRoute').value);
+  const b = $('#rBirth').value, e = $('#rEntry').value || new Date().toISOString().slice(0,10);
+  const rows = [];
+  if (b){
+    const bd = new Date(b), ed = new Date(e);
+    let age = ed.getFullYear() - bd.getFullYear(); const m = ed.getMonth() - bd.getMonth();
+    if (m < 0 || (m === 0 && ed.getDate() < bd.getDate())) age--;
+    const ok = age >= r.edad[0] && age < r.edad[1];
+    rows.push([`${t('age')}: ${age} ${t('years')} (${L==='es'?'debe tener':'must be'} ${r.edad[0]} – ${L==='es'?'menos de':'under'} ${r.edad[1]})`, ok ? 'ok' : 'no']);
+  }
+  const names = {mat:t('fMat'),cie:t('fCie'),lec:t('fLec'),soc:t('fSoc')};
+  const ids = {mat:'#rMat',cie:'#rCie',lec:'#rLec',soc:'#rSoc'};
+  Object.entries(r.icfes).forEach(([k,min]) => {
+    const v = parseFloat($(ids[k]).value);
+    if (!isNaN(v)) rows.push([`${names[k]}: ${v} (${L==='es'?'referencia':'reference'} ${min})`, v >= min ? 'ok' : 'mid']);
+  });
+  rows.push([t('bach'), $('#rBach').checked ? 'ok' : 'no']);
+  rows.push([t('swim'), $('#rSwim').checked ? 'ok' : 'no']);
+  rows.push([t('tat'), $('#rTat').checked ? 'ok' : 'no']);
+  const lab = {ok:t('ok'), no:t('no'), mid:L==='es'?'Bajo la referencia':'Below reference'};
+  $('#reqOut').innerHTML = `<h3 class="cond" style="font-size:26px">${r.n[L_IDX()]}</h3><p class="note">${r.d[L_IDX()]}</p>
+    <div class="req"><span>${t('sex')}</span><span class="pill mid">${r.sexo==='both'?t('both'):t('men')}</span></div>
+    ${rows.map(x => `<div class="req"><span>${x[0]}</span><span class="pill ${x[1]}">${lab[x[1]]}</span></div>`).join('')}
+    <div class="alert">${t('reqNote')}</div>
+    <a class="btn sea" href="https://incorporaciones.armada.mil.co/" target="_blank" rel="noopener">incorporaciones.armada.mil.co</a>`;
+}
+
+/* ================= Física ================= */
+const METAS = { h:{push:35, abs:40, run:10, swim:200}, m:{push:20, abs:35, run:12, swim:150} };
+function savePhys(){
+  const v = { push:+$('#pPush').value||null, abs:+$('#pAbs').value||null, run:+$('#pRun').value||null, swim:+$('#pSwim').value||null };
+  if (!Object.values(v).some(x => x)) { alert(t('fill')); return; }
+  const h = store.get('ra_phys', []); h.push({ d:Date.now(), sex:$('#pSex').value, ...v }); store.set('ra_phys', h.slice(-100));
+  ['#pPush','#pAbs','#pRun','#pSwim'].forEach(s => $(s).value = '');
+  renderPhys();
+}
+function renderPhys(){
+  const h = store.get('ra_phys', []), sex = $('#pSex').value || 'h', g = METAS[sex];
+  const best = k => { const xs = h.map(x => x[k]).filter(Boolean); if (!xs.length) return null; return k === 'run' ? Math.min(...xs) : Math.max(...xs); };
+  const item = (k, lab, unit) => { const b = best(k), goal = g[k]; const pct = b ? Math.min(100, Math.round(k==='run' ? goal/b*100 : b/goal*100)) : 0;
+    return `<div class="areabar"><div class="n"><span>${lab}</span><span>${b ?? '—'} ${unit} / ${goal} ${unit}</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`; };
+  $('#physOut').innerHTML = `<h3 class="cond" style="font-size:24px">${t('physGoals')}</h3>
+    ${item('push', t('pPush'), t('reps'))}${item('abs', t('pAbs'), t('reps'))}${item('run', t('pRun'), t('min'))}${item('swim', t('pSwim'), t('m'))}
+    <p class="note">${L==='es'?'Barra = tu mejor marca frente a la meta sugerida.':'Bar = your best mark against the suggested goal.'}</p>`;
+  $('#physHist').innerHTML = h.length ? `<table><tr><th>${t('date')}</th><th>${t('pPush')}</th><th>${t('pAbs')}</th><th>${t('pRun')}</th><th>${t('pSwim')}</th></tr>
+    ${h.slice().reverse().slice(0,15).map(x => `<tr><td>${fechaCO(x.d)}</td><td>${x.push??'—'}</td><td>${x.abs??'—'}</td><td>${x.run??'—'}</td><td>${x.swim??'—'}</td></tr>`).join('')}</table>` : `<p class="note">${t('noPhys')}</p>`;
+}
+$('#pSex').onchange = renderPhys;
+
+/* ================= Entrevista ================= */
+const IV = {
+ es:[['¿Por qué quieres entrar a la Armada de Colombia?','Habla de tu vocación con un hecho concreto: algo que viviste, viste o aprendiste. Evita decir solo "por el sueldo" o "por estabilidad".'],
+     ['Cuéntanos de ti y de tu familia.','Sé breve y ordenado: de dónde eres, con quién vives, qué te enseñaron. Muestra que tu familia conoce y apoya tu decisión.'],
+     ['¿Qué sabes de la Armada y de la escuela a la que aspiras?','Menciona la escuela, la ciudad, qué se forma allí y qué especialidad te llama la atención.'],
+     ['Describe una situación difícil que hayas superado.','Usa el orden: situación, lo que hiciste, el resultado y lo que aprendiste.'],
+     ['¿Cómo reaccionas ante una orden con la que no estás de acuerdo?','Muestra disciplina y respeto por el conducto regular: cumples y, si hace falta, expones tu punto por el canal correcto.'],
+     ['¿Qué harías si un compañero comete una falta grave?','La lealtad es con la institución y con la verdad. Habla de honestidad y de informar por el conducto regular.'],
+     ['¿Cuáles son tus fortalezas y tus debilidades?','Una fortaleza con ejemplo y una debilidad real que estés trabajando, con lo que haces para mejorarla.'],
+     ['¿Cómo manejas la presión y el estrés?','Da ejemplos: exámenes, deporte, trabajo. Menciona hábitos concretos como el ejercicio o la organización.'],
+     ['¿Dónde te ves en diez años?','Muestra un plan de carrera dentro de la institución y ganas de seguir estudiando.'],
+     ['¿Qué significan para ti el honor y la lealtad?','Responde con tus palabras y con un ejemplo de tu vida. No recites definiciones de memoria.']],
+ en:[['Why do you want to join the Colombian Navy?','Explain your calling with a concrete fact: something you lived, saw or learned. Avoid saying only "for the salary" or "for stability".'],
+     ['Tell us about yourself and your family.','Be brief and organized: where you are from, who you live with, what they taught you. Show your family knows and supports your decision.'],
+     ['What do you know about the Navy and the school you are applying to?','Mention the school, the city, what it trains and which specialty interests you.'],
+     ['Describe a difficult situation you overcame.','Use this order: situation, what you did, the result and what you learned.'],
+     ['How do you react to an order you disagree with?','Show discipline and respect for the chain of command: you comply and, if needed, raise your view through the proper channel.'],
+     ['What would you do if a teammate committed a serious offense?','Loyalty is to the institution and to the truth. Talk about honesty and reporting through the chain of command.'],
+     ['What are your strengths and weaknesses?','One strength with an example and one real weakness you are working on, with what you do to improve it.'],
+     ['How do you handle pressure and stress?','Give examples: exams, sports, work. Mention concrete habits like exercise or organization.'],
+     ['Where do you see yourself in ten years?','Show a career plan within the institution and a desire to keep studying.'],
+     ['What do honor and loyalty mean to you?','Answer in your own words with an example from your life. Do not recite memorized definitions.']]
+};
+let ivI = 0, ivT = null, ivS = 90;
+function ivRender(){ const q = IV[L][ivI]; $('#ivN').textContent = `${t('q')} ${ivI+1} ${t('of')} ${IV[L].length}`; $('#ivQ').textContent = q[0]; $('#ivTip').textContent = q[1]; }
+function ivMove(d){ ivStop(); ivI = (ivI + d + IV[L].length) % IV[L].length; ivRender(); }
+function ivStop(){ clearInterval(ivT); ivT = null; ivS = 90; $('#ivClock').textContent = '1:30'; $('#ivClock').style.color = ''; $('#ivBtn').textContent = t('ivGo'); }
+function ivStart(){
+  if (ivT){ ivStop(); return; }
+  $('#ivBtn').textContent = t('ivStop');
+  ivT = setInterval(() => { ivS--; $('#ivClock').textContent = `${Math.floor(ivS/60)}:${String(ivS%60).padStart(2,'0')}`;
+    if (ivS <= 15) $('#ivClock').style.color = 'var(--bad)';
+    if (ivS <= 0){ ivStop(); try{ navigator.vibrate && navigator.vibrate(300); }catch(e){} } }, 1000);
+}
+
+/* ================= Progreso ================= */
+function renderProg(){
+  const h = store.get('ra_hist', []);
+  if (!h.length){ $('#progOut').innerHTML = `<p class="note">${t('noHist')}</p><button class="btn gold" style="margin-top:10px" onclick="go('simulacro')">${t('ctaSim')}</button>`; return; }
+  const modeN = {full:t('mFull'), psi:t('mPsi'), mini:t('mMini'), bat:t('mBat')}; Object.keys(MIX).filter(k => k.startsWith('s_')).forEach(k => modeN[k] = AREAS[k.slice(2)][L]);
+  const tot = {}; h.forEach(x => Object.entries(x.per).forEach(([a,v]) => { tot[a] = tot[a] || {ok:0,n:0}; tot[a].ok += v.ok; tot[a].n += v.n; }));
+  const pts = h.slice(-12), W = 600, H = 160;
+  const line = pts.map((x,i) => `${pts.length===1?W/2:i*(W/(pts.length-1))},${H - x.score/100*H}`).join(' ');
+  $('#progOut').innerHTML = `
+    <svg viewBox="-10 -10 ${W+20} ${H+20}" style="width:100%;height:auto;margin-bottom:10px">
+      <line x1="0" x2="${W}" y1="${H*0.3}" y2="${H*0.3}" stroke="var(--gold)" stroke-dasharray="6 6"/>
+      <polyline points="${line}" fill="none" stroke="var(--sea)" stroke-width="4" stroke-linejoin="round"/>
+      ${pts.map((x,i) => `<circle cx="${pts.length===1?W/2:i*(W/(pts.length-1))}" cy="${H - x.score/100*H}" r="6" fill="var(--sea)"/>`).join('')}
+    </svg>
+    <p class="note">${L==='es'?'Línea dorada: 70 puntos, meta recomendada.':'Gold line: 70 points, recommended target.'}</p>
+    <h3 class="cond" style="font-size:24px;margin-top:12px">${t('byArea')}</h3>
+    ${Object.entries(tot).map(([a,v]) => { const p = Math.round(v.ok/v.n*100); return `<div class="areabar"><div class="n"><span>${AREAS[a][L]}</span><span>${p}%</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`; }).join('')}
+    <table style="margin-top:14px"><tr><th>${t('date')}</th><th>${t('mode')}</th><th>${t('score')}</th></tr>
+    ${h.slice().reverse().map(x => `<tr><td>${fechaCO(x.d)}</td><td>${modeN[x.mode]||x.mode}</td><td><b>${x.score}</b></td></tr>`).join('')}</table>`;
+}
+
+
+/* ================= Psicotécnica ================= */
+function renderPsi(){
+  const sub = ['psV','psN','psA','psE','raz','psT'];
+  $('#psiCards').innerHTML = sub.map(a => { const m = MIX['s_'+a]; const n = Object.values(m.all)[0];
+    return `<div class="card"><h3 class="cond" style="font-size:22px">${AREAS[a][L]}</h3><p class="note">${n} ${t('qs')} · ${m.min} ${t('min2')}</p>
+     <button class="btn sea" style="margin-top:10px" onclick="go('simulacro');startExam('s_${a}')">${t('start')}</button></div>`; }).join('');
+}
+function psiOpen(html){ $('#psiStart').classList.add('hide'); const b = $('#psiBox'); b.classList.remove('hide'); b.innerHTML = html; }
+function psiClose(){ clearTimeout(MEM.to); $('#psiBox').classList.add('hide'); $('#psiStart').classList.remove('hide'); }
+
+/* Memoria de trabajo */
+const MEM = { len:4, cur:'', best:0, fails:0, to:null };
+function memStart(){ MEM.len = 4; MEM.best = 0; MEM.fails = 0; memShow(); }
+function memShow(){
+  MEM.cur = Array.from({length:MEM.len}, (_, i) => i === 0 ? Math.floor(Math.random()*9)+1 : Math.floor(Math.random()*10)).join('');
+  psiOpen(`<div class="card" style="text-align:center"><div class="qmeta"><span>${t('memT')}</span><span>${MEM.len} ${t('digits')}</span></div>
+    <p class="note" style="margin-top:12px">${t('memWatch')}</p><div class="memnum">${MEM.cur}</div></div>`);
+  MEM.to = setTimeout(memAsk, 3000);
+}
+function memAsk(){
+  psiOpen(`<div class="card" style="text-align:center"><div class="qmeta"><span>${t('memT')}</span><span>${MEM.len} ${t('digits')}</span></div>
+    <p class="note" style="margin-top:12px">${t('memType')}</p>
+    <input id="memIn" inputmode="numeric" autocomplete="off" style="font-size:32px;text-align:center;letter-spacing:8px;margin:14px 0">
+    <button class="btn gold" onclick="memCheck()">${t('send')}</button></div>`);
+  const i = $('#memIn'); i.focus(); i.onkeydown = e => { if (e.key === 'Enter') memCheck(); };
+}
+function memCheck(){
+  const v = ($('#memIn').value || '').replace(/\D/g, '');
+  if (v === MEM.cur){ MEM.best = MEM.len; MEM.len++; MEM.fails = 0;
+    psiOpen(`<div class="card" style="text-align:center"><div class="verdict" style="color:var(--ok)">${t('memOk')}</div></div>`); MEM.to = setTimeout(memShow, 1100); return; }
+  MEM.fails++;
+  if (MEM.fails < 2){ psiOpen(`<div class="card" style="text-align:center"><p class="note">${t('memBad')}</p><div class="memnum" style="color:var(--bad)">${MEM.cur}</div></div>`); MEM.to = setTimeout(memShow, 1800); return; }
+  const best = store.get('ra_mem', 0); if (MEM.best > best) store.set('ra_mem', MEM.best);
+  psiOpen(`<div class="card" style="text-align:center"><h2 class="h2">${t('memEnd')}</h2><div class="memnum">${MEM.best || MEM.len - 1}</div><p class="note">${t('digits')} · ${t('memRef')}</p>
+    <div class="qnav" style="justify-content:center"><button class="btn sea" onclick="memStart()">${t('rep')}</button><button class="btn line" onclick="psiClose()">${t('back')}</button></div></div>`);
+}
+
+/* Personalidad */
+let PER = null;
+function perStart(){ PER = { i:0, ans:Array(PERSONALIDAD.length).fill(null) }; perDraw(); }
+function perDraw(){
+  const it = PERSONALIDAD[PER.i], n = PERSONALIDAD.length, lab = t('lik');
+  psiOpen(`<div class="exam-head"><b>${t('perT')}</b><div class="bar"><i style="width:${PER.i/n*100}%"></i></div><b>${PER.i+1}/${n}</b></div>
+   <div class="qcard"><div class="qtext">${it[L==='es'?2:3]}</div>
+   <div class="lik">${lab.map((x,k) => `<button class="${PER.ans[PER.i]===k+1?'pick':''}" onclick="perAns(${k+1})">${x}</button>`).join('')}</div>
+   <div class="qnav"><button class="btn line" onclick="${PER.i ? 'PER.i--;perDraw()' : 'psiClose()'}">${t(PER.i ? 'prev' : 'back')}</button></div></div>`);
+}
+function perAns(v){ PER.ans[PER.i] = v; if (PER.i < PERSONALIDAD.length-1){ PER.i++; perDraw(); } else perResult(); }
+function perResult(){
+  const acc = {}, ctl = [];
+  PERSONALIDAD.forEach((it, i) => { const v = PER.ans[i]; if (it[0] === 'ctl'){ ctl.push(v); return; }
+    const s = it[1] ? 6 - v : v; (acc[it[0]] = acc[it[0]] || []).push(s); });
+  const ctlAvg = ctl.reduce((a,b) => a+b, 0) / ctl.length;
+  const sincero = ctlAvg < 4;
+  const sincPct = Math.round((5 - ctlAvg) / 4 * 100);
+  psiOpen(`<div class="card"><h2 class="h2">${t('perRes')}</h2>
+    ${Object.entries(acc).map(([d, xs]) => { const p = Math.round((xs.reduce((a,b)=>a+b,0)/xs.length - 1) / 4 * 100);
+      return `<div class="areabar"><div class="n"><span>${DIMS[d][L]}</span><span>${p}%</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`; }).join('')}
+    <div class="areabar"><div class="n"><span>${t('sinc')}</span><span>${sincPct}%</span></div><div class="bar"><i style="width:${sincPct}%;background:${sincero?'var(--ok)':'var(--bad)'}"></i></div></div>
+    <div class="alert">${sincero ? t('sincOk') : t('sincBad')}</div>
+    <p class="note">${t('perNote')}</p>
+    <div class="qnav"><button class="btn sea" onclick="perStart()">${t('rep')}</button><button class="btn line" onclick="psiClose()">${t('back')}</button><button class="btn gold" onclick="go('entrevista')">${t('nEnt')}</button></div></div>`);
+}
+
+/* ================= PWA ================= */
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+let deferred;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('#install').classList.add('on'); });
+$('#instBtn').onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice; deferred = null; $('#install').classList.remove('on'); };
+
+applyLang();
+</script>
+</body>
+</html>
