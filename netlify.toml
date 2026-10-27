@@ -1,0 +1,18 @@
+# Las fotos reales se sirven desde el mismo dominio para poder armar y descargar el flyer
+[[redirects]]
+  from = "/fotos/cadetes.jpg"
+  to = "https://www.cgfm.mil.co/sites/default/files/2025-04/cogfm-arc-juramento-la-bandera-de-150-nuevos-cadetes-en-la-escuela-naval-14.jpg"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/fotos/aspirantes.jpg"
+  to = "https://www.cgfm.mil.co/sites/default/files/2024-01/cogfm_arc._foto._ingreso_aspirantes_i-2024_9.jpg"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/fotos/grumetes.jpg"
+  to = "https://www.cgfm.mil.co/sites/default/files/cogfm_arc_grumetes_juran_bandera.jpeg"
+  status = 200
+  force = true

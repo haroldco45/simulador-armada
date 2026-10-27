@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flyer — Rumbo a la Armada</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b1f3a">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0b1f3a;--sea:#0e5aa7;--gold:#c9a227;--bg:#07111f}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:#eaf1fb;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px 40px;gap:16px}
+h1{font-family:'Barlow Condensed',sans-serif;font-size:30px;text-transform:uppercase;letter-spacing:1px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;font-weight:700;border:0;border-radius:40px;padding:12px 20px;cursor:pointer}
+.pick{background:#122b4f;color:#cfe0f5}
+.pick.on{background:#fff;color:var(--navy)}
+.dl{background:var(--gold);color:var(--navy);font-size:17px;padding:15px 28px}
+#out{width:100%;max-width:540px;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.5);display:block}
+.note{font-size:13px;color:#9fb0c6;max-width:540px;text-align:center}
+</style>
+</head>
+<body>
+<h1>Flyer Rumbo a la Armada</h1>
+<div class="bar" id="fotos">
+  <button class="pick on" data-f="fotos/cadetes.jpg">Juramento de cadetes</button>
+  <button class="pick" data-f="fotos/aspirantes.jpg">Ingreso de aspirantes</button>
+  <button class="pick" data-f="fotos/grumetes.jpg">Grumetes</button>
+</div>
+<img id="out" alt="Flyer de Rumbo a la Armada">
+<button class="dl" id="dl">Descargar flyer (PNG)</button>
+<p class="note" id="msg">Foto real: Armada de Colombia / Comando General de las Fuerzas Militares. Tamaño 1080×1350 para WhatsApp e Instagram.</p>
+<script>
+const QR = { n: 29, d: "M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM10 0h1v1h-1zM11 0h1v1h-1zM12 0h1v1h-1zM13 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM20 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM25 0h1v1h-1zM26 0h1v1h-1zM27 0h1v1h-1zM28 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM13 1h1v1h-1zM17 1h1v1h-1zM18 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM13 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM19 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM25 2h1v1h-1zM26 2h1v1h-1zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM11 3h1v1h-1zM12 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM17 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM25 3h1v1h-1zM26 3h1v1h-1zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM9 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM14 4h1v1h-1zM15 4h1v1h-1zM16 4h1v1h-1zM17 4h1v1h-1zM19 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM25 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM19 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM25 6h1v1h-1zM26 6h1v1h-1zM27 6h1v1h-1zM28 6h1v1h-1zM8 7h1v1h-1zM9 7h1v1h-1zM10 7h1v1h-1zM13 7h1v1h-1zM14 7h1v1h-1zM17 7h1v1h-1zM18 7h1v1h-1zM0 8h1v1h-1zM2 8h1v1h-1zM3 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM11 8h1v1h-1zM13 8h1v1h-1zM14 8h1v1h-1zM17 8h1v1h-1zM22 8h1v1h-1zM25 8h1v1h-1zM27 8h1v1h-1zM28 8h1v1h-1zM1 9h1v1h-1zM3 9h1v1h-1zM5 9h1v1h-1zM8 9h1v1h-1zM9 9h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM17 9h1v1h-1zM18 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM21 9h1v1h-1zM22 9h1v1h-1zM23 9h1v1h-1zM24 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM8 10h1v1h-1zM10 10h1v1h-1zM11 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM21 10h1v1h-1zM22 10h1v1h-1zM26 10h1v1h-1zM27 10h1v1h-1zM1 11h1v1h-1zM4 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM13 11h1v1h-1zM14 11h1v1h-1zM16 11h1v1h-1zM22 11h1v1h-1zM23 11h1v1h-1zM28 11h1v1h-1zM0 12h1v1h-1zM1 12h1v1h-1zM4 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM15 12h1v1h-1zM17 12h1v1h-1zM20 12h1v1h-1zM23 12h1v1h-1zM25 12h1v1h-1zM26 12h1v1h-1zM2 13h1v1h-1zM3 13h1v1h-1zM8 13h1v1h-1zM10 13h1v1h-1zM11 13h1v1h-1zM13 13h1v1h-1zM15 13h1v1h-1zM16 13h1v1h-1zM19 13h1v1h-1zM22 13h1v1h-1zM26 13h1v1h-1zM27 13h1v1h-1zM28 13h1v1h-1zM0 14h1v1h-1zM2 14h1v1h-1zM6 14h1v1h-1zM7 14h1v1h-1zM8 14h1v1h-1zM14 14h1v1h-1zM16 14h1v1h-1zM17 14h1v1h-1zM18 14h1v1h-1zM19 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM23 14h1v1h-1zM26 14h1v1h-1zM27 14h1v1h-1zM28 14h1v1h-1zM0 15h1v1h-1zM2 15h1v1h-1zM4 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM10 15h1v1h-1zM11 15h1v1h-1zM12 15h1v1h-1zM13 15h1v1h-1zM16 15h1v1h-1zM18 15h1v1h-1zM23 15h1v1h-1zM27 15h1v1h-1zM1 16h1v1h-1zM2 16h1v1h-1zM3 16h1v1h-1zM5 16h1v1h-1zM6 16h1v1h-1zM7 16h1v1h-1zM9 16h1v1h-1zM11 16h1v1h-1zM12 16h1v1h-1zM15 16h1v1h-1zM18 16h1v1h-1zM20 16h1v1h-1zM21 16h1v1h-1zM23 16h1v1h-1zM24 16h1v1h-1zM25 16h1v1h-1zM27 16h1v1h-1zM1 17h1v1h-1zM2 17h1v1h-1zM3 17h1v1h-1zM4 17h1v1h-1zM5 17h1v1h-1zM8 17h1v1h-1zM10 17h1v1h-1zM11 17h1v1h-1zM13 17h1v1h-1zM15 17h1v1h-1zM16 17h1v1h-1zM20 17h1v1h-1zM23 17h1v1h-1zM25 17h1v1h-1zM26 17h1v1h-1zM27 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM6 18h1v1h-1zM7 18h1v1h-1zM11 18h1v1h-1zM12 18h1v1h-1zM15 18h1v1h-1zM16 18h1v1h-1zM20 18h1v1h-1zM23 18h1v1h-1zM24 18h1v1h-1zM26 18h1v1h-1zM2 19h1v1h-1zM3 19h1v1h-1zM8 19h1v1h-1zM10 19h1v1h-1zM11 19h1v1h-1zM17 19h1v1h-1zM18 19h1v1h-1zM23 19h1v1h-1zM24 19h1v1h-1zM26 19h1v1h-1zM1 20h1v1h-1zM3 20h1v1h-1zM5 20h1v1h-1zM6 20h1v1h-1zM7 20h1v1h-1zM8 20h1v1h-1zM11 20h1v1h-1zM12 20h1v1h-1zM13 20h1v1h-1zM15 20h1v1h-1zM17 20h1v1h-1zM18 20h1v1h-1zM20 20h1v1h-1zM21 20h1v1h-1zM22 20h1v1h-1zM23 20h1v1h-1zM24 20h1v1h-1zM25 20h1v1h-1zM26 20h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM12 21h1v1h-1zM13 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM20 21h1v1h-1zM24 21h1v1h-1zM25 21h1v1h-1zM26 21h1v1h-1zM27 21h1v1h-1zM28 21h1v1h-1zM0 22h1v1h-1zM1 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM5 22h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM10 22h1v1h-1zM13 22h1v1h-1zM17 22h1v1h-1zM18 22h1v1h-1zM19 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM25 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM10 23h1v1h-1zM11 23h1v1h-1zM15 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM24 23h1v1h-1zM25 23h1v1h-1zM27 23h1v1h-1zM28 23h1v1h-1zM0 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM6 24h1v1h-1zM9 24h1v1h-1zM14 24h1v1h-1zM15 24h1v1h-1zM17 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM22 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1zM26 24h1v1h-1zM0 25h1v1h-1zM2 25h1v1h-1zM3 25h1v1h-1zM4 25h1v1h-1zM6 25h1v1h-1zM8 25h1v1h-1zM10 25h1v1h-1zM11 25h1v1h-1zM14 25h1v1h-1zM15 25h1v1h-1zM16 25h1v1h-1zM21 25h1v1h-1zM23 25h1v1h-1zM24 25h1v1h-1zM25 25h1v1h-1zM28 25h1v1h-1zM0 26h1v1h-1zM2 26h1v1h-1zM3 26h1v1h-1zM4 26h1v1h-1zM6 26h1v1h-1zM8 26h1v1h-1zM13 26h1v1h-1zM18 26h1v1h-1zM19 26h1v1h-1zM23 26h1v1h-1zM26 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM9 27h1v1h-1zM11 27h1v1h-1zM13 27h1v1h-1zM14 27h1v1h-1zM15 27h1v1h-1zM18 27h1v1h-1zM19 27h1v1h-1zM20 27h1v1h-1zM22 27h1v1h-1zM23 27h1v1h-1zM25 27h1v1h-1zM27 27h1v1h-1zM0 28h1v1h-1zM1 28h1v1h-1zM2 28h1v1h-1zM3 28h1v1h-1zM4 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM13 28h1v1h-1zM15 28h1v1h-1zM18 28h1v1h-1zM19 28h1v1h-1zM20 28h1v1h-1zM21 28h1v1h-1zM22 28h1v1h-1zM23 28h1v1h-1zM25 28h1v1h-1zM27 28h1v1h-1z" };
+const W = 1080, H = 1350;
+const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+const x = cv.getContext('2d');
+let foto = 'fotos/cadetes.jpg';
+
+function loadImg(src){ return new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
+function rr(px, py, w, h, r){ x.beginPath(); x.moveTo(px+r, py); x.arcTo(px+w, py, px+w, py+h, r); x.arcTo(px+w, py+h, px, py+h, r); x.arcTo(px, py+h, px, py, r); x.arcTo(px, py, px+w, py, r); x.closePath(); }
+function wrap(text, px, py, maxW, lh){ const words = text.split(' '); let line = ''; for (const w of words){ const t = line ? line + ' ' + w : w; if (x.measureText(t).width > maxW && line){ x.fillText(line, px, py); line = w; py += lh; } else line = t; } x.fillText(line, px, py); return py; }
+function fitText(t, maxW, size, font){ let s = size; do { x.font = font.replace('{s}', s); s -= 2; } while (x.measureText(t).width > maxW && s > 20); }
+
+async function draw(){
+  await document.fonts.ready;
+  try { await Promise.all(['800 150px "Barlow Condensed"','700 40px "Barlow Condensed"','600 25px Inter','700 22px Inter','400 20px Inter'].map(f => document.fonts.load(f))); } catch(e){}
+  const img = await loadImg(foto);
+  x.fillStyle = '#0b1f3a'; x.fillRect(0, 0, W, H);
+
+  // Foto real
+  const PH = 640;
+  if (img){
+    const s = Math.max(W / img.width, PH / img.height), iw = img.width * s, ih = img.height * s;
+    x.drawImage(img, (W - iw) / 2, (PH - ih) / 2, iw, ih);
+    document.getElementById('msg').textContent = 'Foto real: Armada de Colombia / Comando General de las Fuerzas Militares. Tamaño 1080×1350 para WhatsApp e Instagram.';
+  } else {
+    const g = x.createLinearGradient(0, 0, W, PH); g.addColorStop(0, '#0e5aa7'); g.addColorStop(1, '#0b1f3a'); x.fillStyle = g; x.fillRect(0, 0, W, PH);
+    document.getElementById('msg').textContent = 'No se pudo cargar la foto en este momento. Recarga la página o prueba con otra foto.';
+  }
+  const fade = x.createLinearGradient(0, PH - 330, 0, PH); fade.addColorStop(0, 'rgba(11,31,58,0)'); fade.addColorStop(1, 'rgba(11,31,58,1)');
+  x.fillStyle = fade; x.fillRect(0, PH - 330, W, 330);
+  const top = x.createLinearGradient(0, 0, 0, 180); top.addColorStop(0, 'rgba(11,31,58,.55)'); top.addColorStop(1, 'rgba(11,31,58,0)');
+  x.fillStyle = top; x.fillRect(0, 0, W, 180);
+
+  // Etiqueta
+  x.font = '800 22px Inter'; const tag = 'SIMULADOR GRATUITO 2026–2027'; x.letterSpacing = '3px';
+  const tw = x.measureText(tag).width + 48; rr(64, 52, tw, 52, 26); x.fillStyle = '#c9a227'; x.fill();
+  x.fillStyle = '#0b1f3a'; x.textBaseline = 'middle'; x.fillText(tag, 88, 79); x.letterSpacing = '0px';
+
+  // Título
+  x.textBaseline = 'alphabetic';
+  x.font = '800 150px "Barlow Condensed"'; x.fillStyle = '#ffffff'; x.fillText('RUMBO A LA', 60, 618);
+  x.fillStyle = '#e6c45a'; x.fillText('ARMADA', 60, 748);
+  x.font = '400 32px Inter'; x.fillStyle = '#dce8f7';
+  wrap('Prepárate para entrar a la Armada de Colombia como cadete, grumete o infante de marina.', 64, 806, 950, 42);
+
+  // Puntos fuertes
+  const items = ['Simulacro de 50 preguntas con reloj','Pruebas psicotécnicas completas','Memoria y personalidad','Entrevista y prueba física','¿Cumplo los requisitos?','Cada examen cambia'];
+  const cw = (W - 128 - 14) / 2, ch = 64;
+  items.forEach((t, i) => {
+    const cx = 64 + (i % 2) * (cw + 14), cy = 880 + Math.floor(i / 2) * (ch + 12), last = i === items.length - 1;
+    rr(cx, cy, cw, ch, 14); x.fillStyle = last ? '#c9a227' : '#122b4f'; x.fill();
+    x.fillStyle = last ? '#0b1f3a' : '#ffffff'; x.font = (last ? '700' : '600') + ' 24px Inter'; x.textBaseline = 'middle';
+    x.fillText(t, cx + 20, cy + ch / 2);
+  });
+  x.textBaseline = 'alphabetic';
+
+  // Banda blanca con QR y URL
+  const by = 1122, bh = 150; rr(64, by, W - 128, bh, 24); x.fillStyle = '#ffffff'; x.fill();
+  const qs = 118, qx = 92, qy = by + (bh - qs) / 2;
+  x.save(); x.translate(qx, qy); x.scale(qs / QR.n, qs / QR.n); x.fillStyle = '#0b1f3a'; x.fill(new Path2D(QR.d)); x.restore();
+  x.fillStyle = '#0e5aa7'; x.font = '700 20px Inter'; x.letterSpacing = '2px'; x.fillText('ENTRA GRATIS DESDE TU CELULAR', 238, by + 46); x.letterSpacing = '0px';
+  x.fillStyle = '#0b1f3a'; fitText('simulador-armada.netlify.app', W - 128 - 200, 58, '800 {s}px "Barlow Condensed"'); x.fillText('simulador-armada.netlify.app', 236, by + 102);
+  x.fillStyle = '#3f5470'; x.font = '400 18px Inter'; x.fillText('Funciona sin internet una vez instalada · Español e inglés', 238, by + 132);
+
+  // Pie
+  x.fillStyle = '#ffffff'; x.font = '700 22px Inter'; x.fillText('Vibras Positivas HM', 64, 1306);
+  const nw = x.measureText('Vibras Positivas HM').width;
+  x.fillStyle = '#dce8f7'; x.font = '400 19px Inter'; x.fillText('·  WhatsApp 311 770 0431  ·  Caucasia, Antioquia', 64 + nw + 14, 1306);
+  x.fillStyle = '#8fa3bf'; x.font = '400 14px Inter'; x.fillText('Herramienta independiente de práctica. No es un producto oficial de la Armada de Colombia.', 64, 1334);
+
+  try { document.getElementById('out').src = cv.toDataURL('image/png'); }
+  catch(e){ document.getElementById('msg').textContent = 'La foto no permite exportar la imagen en este momento.'; }
+}
+document.querySelectorAll('.pick').forEach(b => b.onclick = () => { document.querySelectorAll('.pick').forEach(o => o.classList.remove('on')); b.classList.add('on'); foto = b.dataset.f; draw(); });
+document.getElementById('dl').onclick = () => { try { const a = document.createElement('a'); a.download = 'flyer-rumbo-a-la-armada.png'; a.href = cv.toDataURL('image/png'); a.click(); } catch(e){ alert('No se pudo descargar. Recarga e intenta de nuevo.'); } };
+draw();
+</script>
+</body>
+</html>
