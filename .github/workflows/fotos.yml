@@ -1,0 +1,29 @@
+name: Descargar fotos reales
+on:
+  push:
+    paths: ['.github/workflows/fotos.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fotos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Descargar fotos de la Armada (CGFM)
+        run: |
+          mkdir -p fotos
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
+          curl -fsSL -A "$UA" -o fotos/cadetes.jpg   "https://www.cgfm.mil.co/sites/default/files/2025-04/cogfm-arc-juramento-la-bandera-de-150-nuevos-cadetes-en-la-escuela-naval-14.jpg"
+          curl -fsSL -A "$UA" -o fotos/aspirantes.jpg "https://www.cgfm.mil.co/sites/default/files/2024-01/cogfm_arc._foto._ingreso_aspirantes_i-2024_9.jpg"
+          curl -fsSL -A "$UA" -o fotos/grumetes.jpg  "https://www.cgfm.mil.co/sites/default/files/cogfm_arc_grumetes_juran_bandera.jpeg"
+          curl -fsSL -A "$UA" -o fotos/visita.jpg    "https://www.cgfm.mil.co/sites/default/files/cogfm-armada-de-colombia-cadetes-de-buque-peruano-visitan-escuela-naval-11_1.jpg"
+          for v in hulYY0qdJAI fzQyVsM7v30; do curl -fsSL -o "fotos/video-$v.jpg" "https://i.ytimg.com/vi/$v/maxresdefault.jpg" || curl -fsSL -o "fotos/video-$v.jpg" "https://i.ytimg.com/vi/$v/hqdefault.jpg" || true; done
+          ls -la fotos; file fotos/*
+      - name: Guardar en el repositorio
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add fotos
+          git commit -m "Fotos reales de la Armada para el flyer" || echo "sin cambios"
+          git push
